@@ -1,0 +1,432 @@
+import type { Geounit } from '../types';
+
+// Abu Dhabi is centered around 24.4539° N, 54.3773° E
+// These are synthetic polygons representing different neighborhoods/districts
+
+export const geounits: Geounit[] = [
+  {
+    id: 'al-khalidiya',
+    name: 'Al Khalidiya',
+    nameAr: 'الخالدية',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.335, 24.465],
+        [54.355, 24.465],
+        [54.355, 24.480],
+        [54.335, 24.480],
+        [54.335, 24.465],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 12500,
+      urbanizationLevel: 'urban',
+      avgHouseholdIncome: 45000,
+      healthcareFacilityCount: 8,
+      childcareFacilityCount: 12,
+      avgFamilySize: 4.2,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 2100 },
+      { archetypeId: 'established-family', count: 3200 },
+      { archetypeId: 'traditional-large-family', count: 1800 },
+      { archetypeId: 'young-newlywed', count: 1500 },
+      { archetypeId: 'single-mother', count: 400 },
+      { archetypeId: 'homemaker-family', count: 1800 },
+      { archetypeId: 'career-focused-couple', count: 1200 },
+      { archetypeId: 'late-starter', count: 500 },
+    ],
+  },
+  {
+    id: 'al-bateen',
+    name: 'Al Bateen',
+    nameAr: 'البطين',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.340, 24.445],
+        [54.365, 24.445],
+        [54.365, 24.465],
+        [54.340, 24.465],
+        [54.340, 24.445],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 8200,
+      urbanizationLevel: 'urban',
+      avgHouseholdIncome: 75000,
+      healthcareFacilityCount: 6,
+      childcareFacilityCount: 8,
+      avgFamilySize: 3.8,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 1400 },
+      { archetypeId: 'established-family', count: 1800 },
+      { archetypeId: 'traditional-large-family', count: 600 },
+      { archetypeId: 'young-newlywed', count: 800 },
+      { archetypeId: 'single-mother', count: 200 },
+      { archetypeId: 'homemaker-family', count: 1000 },
+      { archetypeId: 'career-focused-couple', count: 1800 },
+      { archetypeId: 'late-starter', count: 600 },
+    ],
+  },
+  {
+    id: 'al-mushrif',
+    name: 'Al Mushrif',
+    nameAr: 'المشرف',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.380, 24.450],
+        [54.405, 24.450],
+        [54.405, 24.470],
+        [54.380, 24.470],
+        [54.380, 24.450],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 15800,
+      urbanizationLevel: 'suburban',
+      avgHouseholdIncome: 38000,
+      healthcareFacilityCount: 5,
+      childcareFacilityCount: 10,
+      avgFamilySize: 5.1,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 1900 },
+      { archetypeId: 'established-family', count: 3800 },
+      { archetypeId: 'traditional-large-family', count: 3500 },
+      { archetypeId: 'young-newlywed', count: 2200 },
+      { archetypeId: 'single-mother', count: 600 },
+      { archetypeId: 'homemaker-family', count: 2400 },
+      { archetypeId: 'career-focused-couple', count: 900 },
+      { archetypeId: 'late-starter', count: 500 },
+    ],
+  },
+  {
+    id: 'khalifa-city',
+    name: 'Khalifa City',
+    nameAr: 'مدينة خليفة',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.560, 24.410],
+        [54.600, 24.410],
+        [54.600, 24.440],
+        [54.560, 24.440],
+        [54.560, 24.410],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 22000,
+      urbanizationLevel: 'suburban',
+      avgHouseholdIncome: 42000,
+      healthcareFacilityCount: 7,
+      childcareFacilityCount: 15,
+      avgFamilySize: 4.8,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 3200 },
+      { archetypeId: 'established-family', count: 5500 },
+      { archetypeId: 'traditional-large-family', count: 3800 },
+      { archetypeId: 'young-newlywed', count: 3000 },
+      { archetypeId: 'single-mother', count: 800 },
+      { archetypeId: 'homemaker-family', count: 3200 },
+      { archetypeId: 'career-focused-couple', count: 1800 },
+      { archetypeId: 'late-starter', count: 700 },
+    ],
+  },
+  {
+    id: 'al-shamkha',
+    name: 'Al Shamkha',
+    nameAr: 'الشامخة',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.620, 24.350],
+        [54.670, 24.350],
+        [54.670, 24.390],
+        [54.620, 24.390],
+        [54.620, 24.350],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 28500,
+      urbanizationLevel: 'suburban',
+      avgHouseholdIncome: 35000,
+      healthcareFacilityCount: 6,
+      childcareFacilityCount: 18,
+      avgFamilySize: 5.4,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 2800 },
+      { archetypeId: 'established-family', count: 5200 },
+      { archetypeId: 'traditional-large-family', count: 6500 },
+      { archetypeId: 'young-newlywed', count: 4500 },
+      { archetypeId: 'single-mother', count: 1200 },
+      { archetypeId: 'homemaker-family', count: 5000 },
+      { archetypeId: 'career-focused-couple', count: 2000 },
+      { archetypeId: 'late-starter', count: 1300 },
+    ],
+  },
+  {
+    id: 'al-reem-island',
+    name: 'Al Reem Island',
+    nameAr: 'جزيرة الريم',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.390, 24.485],
+        [54.420, 24.485],
+        [54.420, 24.510],
+        [54.390, 24.510],
+        [54.390, 24.485],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 6500,
+      urbanizationLevel: 'urban',
+      avgHouseholdIncome: 65000,
+      healthcareFacilityCount: 4,
+      childcareFacilityCount: 6,
+      avgFamilySize: 3.2,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 1800 },
+      { archetypeId: 'established-family', count: 1200 },
+      { archetypeId: 'traditional-large-family', count: 300 },
+      { archetypeId: 'young-newlywed', count: 900 },
+      { archetypeId: 'single-mother', count: 150 },
+      { archetypeId: 'homemaker-family', count: 500 },
+      { archetypeId: 'career-focused-couple', count: 1200 },
+      { archetypeId: 'late-starter', count: 450 },
+    ],
+  },
+  {
+    id: 'baniyas',
+    name: 'Baniyas',
+    nameAr: 'بني ياس',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [54.610, 24.280],
+        [54.660, 24.280],
+        [54.660, 24.330],
+        [54.610, 24.330],
+        [54.610, 24.280],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 35000,
+      urbanizationLevel: 'suburban',
+      avgHouseholdIncome: 32000,
+      healthcareFacilityCount: 8,
+      childcareFacilityCount: 22,
+      avgFamilySize: 5.6,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 3500 },
+      { archetypeId: 'established-family', count: 6500 },
+      { archetypeId: 'traditional-large-family', count: 8000 },
+      { archetypeId: 'young-newlywed', count: 5500 },
+      { archetypeId: 'single-mother', count: 1500 },
+      { archetypeId: 'homemaker-family', count: 6000 },
+      { archetypeId: 'career-focused-couple', count: 2500 },
+      { archetypeId: 'late-starter', count: 1500 },
+    ],
+  },
+  {
+    id: 'al-ain-faqa',
+    name: 'Al Ain - Faqa',
+    nameAr: 'العين - فقع',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [55.720, 24.180],
+        [55.780, 24.180],
+        [55.780, 24.230],
+        [55.720, 24.230],
+        [55.720, 24.180],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 18000,
+      urbanizationLevel: 'rural',
+      avgHouseholdIncome: 28000,
+      healthcareFacilityCount: 3,
+      childcareFacilityCount: 8,
+      avgFamilySize: 6.2,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 1200 },
+      { archetypeId: 'established-family', count: 3000 },
+      { archetypeId: 'traditional-large-family', count: 5500 },
+      { archetypeId: 'young-newlywed', count: 2800 },
+      { archetypeId: 'single-mother', count: 800 },
+      { archetypeId: 'homemaker-family', count: 3200 },
+      { archetypeId: 'career-focused-couple', count: 800 },
+      { archetypeId: 'late-starter', count: 700 },
+    ],
+  },
+  {
+    id: 'al-ain-central',
+    name: 'Al Ain - Central',
+    nameAr: 'العين - الوسط',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [55.730, 24.210],
+        [55.780, 24.210],
+        [55.780, 24.250],
+        [55.730, 24.250],
+        [55.730, 24.210],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 42000,
+      urbanizationLevel: 'urban',
+      avgHouseholdIncome: 36000,
+      healthcareFacilityCount: 12,
+      childcareFacilityCount: 25,
+      avgFamilySize: 5.0,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 5000 },
+      { archetypeId: 'established-family', count: 8500 },
+      { archetypeId: 'traditional-large-family', count: 9000 },
+      { archetypeId: 'young-newlywed', count: 6500 },
+      { archetypeId: 'single-mother', count: 1800 },
+      { archetypeId: 'homemaker-family', count: 7000 },
+      { archetypeId: 'career-focused-couple', count: 2700 },
+      { archetypeId: 'late-starter', count: 1500 },
+    ],
+  },
+  {
+    id: 'madinat-zayed',
+    name: 'Madinat Zayed',
+    nameAr: 'مدينة زايد',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [53.680, 23.620],
+        [53.740, 23.620],
+        [53.740, 23.680],
+        [53.680, 23.680],
+        [53.680, 23.620],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 8500,
+      urbanizationLevel: 'rural',
+      avgHouseholdIncome: 30000,
+      healthcareFacilityCount: 2,
+      childcareFacilityCount: 5,
+      avgFamilySize: 5.8,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 600 },
+      { archetypeId: 'established-family', count: 1500 },
+      { archetypeId: 'traditional-large-family', count: 2500 },
+      { archetypeId: 'young-newlywed', count: 1200 },
+      { archetypeId: 'single-mother', count: 400 },
+      { archetypeId: 'homemaker-family', count: 1500 },
+      { archetypeId: 'career-focused-couple', count: 500 },
+      { archetypeId: 'late-starter', count: 300 },
+    ],
+  },
+  {
+    id: 'liwa',
+    name: 'Liwa Oasis',
+    nameAr: 'واحة ليوا',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [53.850, 23.100],
+        [54.000, 23.100],
+        [54.000, 23.200],
+        [53.850, 23.200],
+        [53.850, 23.100],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 4200,
+      urbanizationLevel: 'rural',
+      avgHouseholdIncome: 26000,
+      healthcareFacilityCount: 1,
+      childcareFacilityCount: 3,
+      avgFamilySize: 6.5,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 200 },
+      { archetypeId: 'established-family', count: 700 },
+      { archetypeId: 'traditional-large-family', count: 1500 },
+      { archetypeId: 'young-newlywed', count: 600 },
+      { archetypeId: 'single-mother', count: 150 },
+      { archetypeId: 'homemaker-family', count: 700 },
+      { archetypeId: 'career-focused-couple', count: 200 },
+      { archetypeId: 'late-starter', count: 150 },
+    ],
+  },
+  {
+    id: 'ghayathi',
+    name: 'Ghayathi',
+    nameAr: 'غياثي',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [52.350, 23.900],
+        [52.420, 23.900],
+        [52.420, 23.970],
+        [52.350, 23.970],
+        [52.350, 23.900],
+      ]],
+    },
+    properties: {
+      emiratiPopulation: 5800,
+      urbanizationLevel: 'rural',
+      avgHouseholdIncome: 28000,
+      healthcareFacilityCount: 2,
+      childcareFacilityCount: 4,
+      avgFamilySize: 6.0,
+    },
+    archetypeDistribution: [
+      { archetypeId: 'young-professional-couple', count: 350 },
+      { archetypeId: 'established-family', count: 1000 },
+      { archetypeId: 'traditional-large-family', count: 1800 },
+      { archetypeId: 'young-newlywed', count: 900 },
+      { archetypeId: 'single-mother', count: 250 },
+      { archetypeId: 'homemaker-family', count: 1000 },
+      { archetypeId: 'career-focused-couple', count: 300 },
+      { archetypeId: 'late-starter', count: 200 },
+    ],
+  },
+];
+
+// Calculate total Emirati population
+export const totalEmiratiPopulation = geounits.reduce(
+  (sum, g) => sum + g.properties.emiratiPopulation,
+  0
+);
+
+// Get geounit by ID
+export const getGeounitById = (id: string): Geounit | undefined => {
+  return geounits.find(g => g.id === id);
+};
+
+// Convert to GeoJSON FeatureCollection for mapping
+export const toGeoJSON = (): GeoJSON.FeatureCollection => {
+  return {
+    type: 'FeatureCollection',
+    features: geounits.map(g => ({
+      type: 'Feature' as const,
+      id: g.id,
+      geometry: g.geometry,
+      properties: {
+        id: g.id,
+        name: g.name,
+        nameAr: g.nameAr,
+        ...g.properties,
+      },
+    })),
+  };
+};
