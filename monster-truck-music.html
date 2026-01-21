@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Truck Music Maker!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #8B4513 100%);
+            min-height: 100vh;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #FF6B00;
+            font-size: 3em;
+            text-shadow: 4px 4px 0px #000, -2px -2px 0px #FFD700;
+            padding: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .truck {
+            width: 200px;
+            height: 180px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            position: relative;
+        }
+
+        .truck:hover {
+            transform: scale(1.05);
+        }
+
+        .truck:active {
+            transform: scale(0.95);
+        }
+
+        .truck.playing {
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
+        .truck-body {
+            width: 180px;
+            height: 80px;
+            border-radius: 20px 40px 10px 10px;
+            position: absolute;
+            top: 30px;
+            left: 10px;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3);
+        }
+
+        .truck-cab {
+            width: 70px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            left: 30px;
+            border-radius: 10px 30px 0 0;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
+        }
+
+        .window {
+            width: 40px;
+            height: 25px;
+            background: linear-gradient(180deg, #87CEEB, #B0E0E6);
+            position: absolute;
+            top: 10px;
+            left: 45px;
+            border-radius: 5px 15px 0 0;
+            border: 3px solid #333;
+        }
+
+        .wheel {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #555, #000);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            border: 8px solid #333;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .wheel::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #DDD, #999);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .wheel-left { left: 10px; }
+        .wheel-right { right: 10px; }
+
+        /* Red Truck */
+        .truck-red .truck-body { background: linear-gradient(180deg, #FF4444, #CC0000); }
+        .truck-red .truck-cab { background: linear-gradient(180deg, #FF6666, #FF4444); }
+
+        /* Blue Truck */
+        .truck-blue .truck-body { background: linear-gradient(180deg, #4444FF, #0000CC); }
+        .truck-blue .truck-cab { background: linear-gradient(180deg, #6666FF, #4444FF); }
+
+        /* Green Truck */
+        .truck-green .truck-body { background: linear-gradient(180deg, #44FF44, #00CC00); }
+        .truck-green .truck-cab { background: linear-gradient(180deg, #66FF66, #44FF44); }
+
+        /* Yellow Truck */
+        .truck-yellow .truck-body { background: linear-gradient(180deg, #FFFF44, #CCCC00); }
+        .truck-yellow .truck-cab { background: linear-gradient(180deg, #FFFF66, #FFFF44); }
+
+        /* Purple Truck */
+        .truck-purple .truck-body { background: linear-gradient(180deg, #AA44FF, #7700CC); }
+        .truck-purple .truck-cab { background: linear-gradient(180deg, #CC66FF, #AA44FF); }
+
+        /* Orange Truck */
+        .truck-orange .truck-body { background: linear-gradient(180deg, #FF8844, #CC5500); }
+        .truck-orange .truck-cab { background: linear-gradient(180deg, #FFAA66, #FF8844); }
+
+        .truck-label {
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 0 #FFF;
+        }
+
+        .flames {
+            position: absolute;
+            top: 50px;
+            left: -30px;
+            opacity: 0;
+            transition: opacity 0.1s;
+            font-size: 40px;
+        }
+
+        .truck.playing .flames {
+            opacity: 1;
+            animation: flicker 0.1s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(1.2); }
+        }
+
+        .mud-track {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(180deg, #654321, #3d2817);
+            border-top: 10px dashed #8B4513;
+        }
+
+        .instructions {
+            text-align: center;
+            font-size: 1.5em;
+            color: #333;
+            margin: 10px;
+            background: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+
+        .dust-particle {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #8B4513, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: dustFloat 1s ease-out forwards;
+        }
+
+        @keyframes dustFloat {
+            0% { transform: scale(1) translateY(0); opacity: 0.8; }
+            100% { transform: scale(2) translateY(-100px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>MONSTER TRUCK MUSIC!</h1>
+    <div class="instructions">Tap the trucks to make sounds!</div>
+
+    <div class="game-area">
+        <div class="truck truck-red" data-sound="rev">
+            <div class="flames">🔥</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">VROOM!</div>
+        </div>
+
+        <div class="truck truck-blue" data-sound="honk">
+            <div class="flames">🔥</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">HONK!</div>
+        </div>
+
+        <div class="truck truck-green" data-sound="crash">
+            <div class="flames">💥</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">CRASH!</div>
+        </div>
+
+        <div class="truck truck-yellow" data-sound="zoom">
+            <div class="flames">⚡</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">ZOOM!</div>
+        </div>
+
+        <div class="truck truck-purple" data-sound="beep">
+            <div class="flames">🔥</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">BEEP!</div>
+        </div>
+
+        <div class="truck truck-orange" data-sound="rumble">
+            <div class="flames">💨</div>
+            <div class="truck-cab"></div>
+            <div class="window"></div>
+            <div class="truck-body"></div>
+            <div class="wheel wheel-left"></div>
+            <div class="wheel wheel-right"></div>
+            <div class="truck-label">RUMBLE!</div>
+        </div>
+    </div>
+
+    <div class="mud-track"></div>
+
+    <script>
+        // Create audio context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        // Sound generators
+        function playRev() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.3);
+            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.5);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playHonk() {
+            initAudio();
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc1.type = 'square';
+            osc1.frequency.setValueAtTime(400, audioCtx.currentTime);
+
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(500, audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc1.start();
+            osc2.start();
+            osc1.stop(audioCtx.currentTime + 0.4);
+            osc2.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playCrash() {
+            initAudio();
+            const bufferSize = audioCtx.sampleRate * 0.5;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+            }
+
+            const noise = audioCtx.createBufferSource();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.3);
+
+            noise.buffer = buffer;
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            noise.start();
+        }
+
+        function playZoom() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.2);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.4);
+
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playBeep() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playRumble() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const lfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(50, audioCtx.currentTime);
+
+            lfo.frequency.setValueAtTime(20, audioCtx.currentTime);
+            lfoGain.gain.setValueAtTime(30, audioCtx.currentTime);
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            lfo.start();
+            osc.start();
+            lfo.stop(audioCtx.currentTime + 0.6);
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        const sounds = {
+            rev: playRev,
+            honk: playHonk,
+            crash: playCrash,
+            zoom: playZoom,
+            beep: playBeep,
+            rumble: playRumble
+        };
+
+        // Create dust particles
+        function createDust(x, y) {
+            for (let i = 0; i < 5; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'dust-particle';
+                dust.style.left = (x + Math.random() * 100 - 50) + 'px';
+                dust.style.top = (y + Math.random() * 50) + 'px';
+                document.body.appendChild(dust);
+
+                setTimeout(() => dust.remove(), 1000);
+            }
+        }
+
+        // Handle truck clicks
+        document.querySelectorAll('.truck').forEach(truck => {
+            truck.addEventListener('click', (e) => {
+                const soundType = truck.dataset.sound;
+
+                // Play sound
+                if (sounds[soundType]) {
+                    sounds[soundType]();
+                }
+
+                // Add visual feedback
+                truck.classList.add('playing');
+                setTimeout(() => truck.classList.remove('playing'), 300);
+
+                // Create dust effect
+                const rect = truck.getBoundingClientRect();
+                createDust(rect.left + rect.width / 2, rect.bottom);
+            });
+
+            // Also handle touch for mobile/tablets
+            truck.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                truck.click();
+            });
+        });
+
+        // Fun background - random stars/sparkles
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'fixed';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            sparkle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.animation = 'fadeOut 2s forwards';
+            document.body.appendChild(sparkle);
+
+            setTimeout(() => sparkle.remove(), 2000);
+        }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0; transform: scale(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Occasional sparkles
+        setInterval(createSparkle, 2000);
+    </script>
+</body>
+</html>
