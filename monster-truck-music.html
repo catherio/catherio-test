@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monster Truck Music Maker!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Monster Truck Rally!</title>
     <style>
         * {
             margin: 0;
@@ -12,19 +12,38 @@
         }
 
         body {
-            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #8B4513 100%);
+            background: #3d8c40;
             min-height: 100vh;
             font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow: hidden;
             user-select: none;
+            touch-action: none;
         }
 
-        h1 {
-            text-align: center;
+        #game-canvas {
+            display: block;
+            background: #3d8c40;
+        }
+
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #8B4513 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #start-screen h1 {
             color: #FF6B00;
             font-size: 3em;
             text-shadow: 4px 4px 0px #000, -2px -2px 0px #FFD700;
-            padding: 20px;
+            margin-bottom: 20px;
             animation: bounce 1s ease infinite;
         }
 
@@ -33,260 +52,157 @@
             50% { transform: translateY(-10px); }
         }
 
-        .game-area {
+        #start-screen p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .truck-picker {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 20px;
+            max-width: 800px;
         }
 
-        .truck {
-            width: 200px;
-            height: 180px;
+        .truck-option {
+            width: 120px;
+            height: 100px;
             cursor: pointer;
-            transition: transform 0.1s;
-            position: relative;
+            transition: transform 0.2s;
+            border-radius: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.3);
         }
 
-        .truck:hover {
-            transform: scale(1.05);
+        .truck-option:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.6);
         }
 
-        .truck:active {
+        .truck-option canvas {
+            width: 100%;
+            height: 70px;
+        }
+
+        .truck-option span {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #score {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 50;
+        }
+
+        #controls-hint {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            color: #FFF;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 50;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        #mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: none;
+        }
+
+        .mobile-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 2em;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            margin: 5px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .mobile-btn:active {
+            background: rgba(255,255,255,1);
             transform: scale(0.95);
         }
 
-        .truck.playing {
-            animation: shake 0.3s ease;
+        .controls-row {
+            display: flex;
+            justify-content: center;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(-10px) rotate(-5deg); }
-            75% { transform: translateX(10px) rotate(5deg); }
-        }
-
-        .truck-body {
-            width: 180px;
+        #honk-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
             height: 80px;
-            border-radius: 20px 40px 10px 10px;
-            position: absolute;
-            top: 30px;
-            left: 10px;
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3);
-        }
-
-        .truck-cab {
-            width: 70px;
-            height: 50px;
-            position: absolute;
-            top: 0;
-            left: 30px;
-            border-radius: 10px 30px 0 0;
-            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
-        }
-
-        .window {
-            width: 40px;
-            height: 25px;
-            background: linear-gradient(180deg, #87CEEB, #B0E0E6);
-            position: absolute;
-            top: 10px;
-            left: 45px;
-            border-radius: 5px 15px 0 0;
-            border: 3px solid #333;
-        }
-
-        .wheel {
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle at 30% 30%, #555, #000);
-            border-radius: 50%;
-            position: absolute;
-            bottom: 0;
-            border: 8px solid #333;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.3);
-        }
-
-        .wheel::after {
-            content: '';
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #DDD, #999);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .wheel-left { left: 10px; }
-        .wheel-right { right: 10px; }
-
-        /* Red Truck */
-        .truck-red .truck-body { background: linear-gradient(180deg, #FF4444, #CC0000); }
-        .truck-red .truck-cab { background: linear-gradient(180deg, #FF6666, #FF4444); }
-
-        /* Blue Truck */
-        .truck-blue .truck-body { background: linear-gradient(180deg, #4444FF, #0000CC); }
-        .truck-blue .truck-cab { background: linear-gradient(180deg, #6666FF, #4444FF); }
-
-        /* Green Truck */
-        .truck-green .truck-body { background: linear-gradient(180deg, #44FF44, #00CC00); }
-        .truck-green .truck-cab { background: linear-gradient(180deg, #66FF66, #44FF44); }
-
-        /* Yellow Truck */
-        .truck-yellow .truck-body { background: linear-gradient(180deg, #FFFF44, #CCCC00); }
-        .truck-yellow .truck-cab { background: linear-gradient(180deg, #FFFF66, #FFFF44); }
-
-        /* Purple Truck */
-        .truck-purple .truck-body { background: linear-gradient(180deg, #AA44FF, #7700CC); }
-        .truck-purple .truck-cab { background: linear-gradient(180deg, #CC66FF, #AA44FF); }
-
-        /* Orange Truck */
-        .truck-orange .truck-body { background: linear-gradient(180deg, #FF8844, #CC5500); }
-        .truck-orange .truck-cab { background: linear-gradient(180deg, #FFAA66, #FF8844); }
-
-        .truck-label {
-            position: absolute;
-            bottom: -30px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.2em;
+            font-size: 1em;
             font-weight: bold;
-            color: #333;
-            text-shadow: 1px 1px 0 #FFF;
-        }
-
-        .flames {
-            position: absolute;
-            top: 50px;
-            left: -30px;
-            opacity: 0;
-            transition: opacity 0.1s;
-            font-size: 40px;
-        }
-
-        .truck.playing .flames {
-            opacity: 1;
-            animation: flicker 0.1s infinite;
-        }
-
-        @keyframes flicker {
-            0%, 100% { transform: scaleX(1); }
-            50% { transform: scaleX(1.2); }
-        }
-
-        .mud-track {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(180deg, #654321, #3d2817);
-            border-top: 10px dashed #8B4513;
-        }
-
-        .instructions {
-            text-align: center;
-            font-size: 1.5em;
-            color: #333;
-            margin: 10px;
-            background: rgba(255,255,255,0.7);
-            padding: 10px;
-            border-radius: 20px;
-            max-width: 600px;
-            margin: 10px auto;
-        }
-
-        .dust-particle {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #8B4513, transparent);
+            border: none;
             border-radius: 50%;
-            pointer-events: none;
-            animation: dustFloat 1s ease-out forwards;
+            background: #FF6B00;
+            color: white;
+            cursor: pointer;
+            z-index: 50;
+            display: none;
+            touch-action: manipulation;
         }
 
-        @keyframes dustFloat {
-            0% { transform: scale(1) translateY(0); opacity: 0.8; }
-            100% { transform: scale(2) translateY(-100px); opacity: 0; }
+        @media (pointer: coarse) {
+            #mobile-controls, #honk-btn {
+                display: block;
+            }
+            #controls-hint {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>MONSTER TRUCK MUSIC!</h1>
-    <div class="instructions">Tap the trucks to make sounds!</div>
-
-    <div class="game-area">
-        <div class="truck truck-red" data-sound="rev">
-            <div class="flames">🔥</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">VROOM!</div>
-        </div>
-
-        <div class="truck truck-blue" data-sound="honk">
-            <div class="flames">🔥</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">HONK!</div>
-        </div>
-
-        <div class="truck truck-green" data-sound="crash">
-            <div class="flames">💥</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">CRASH!</div>
-        </div>
-
-        <div class="truck truck-yellow" data-sound="zoom">
-            <div class="flames">⚡</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">ZOOM!</div>
-        </div>
-
-        <div class="truck truck-purple" data-sound="beep">
-            <div class="flames">🔥</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">BEEP!</div>
-        </div>
-
-        <div class="truck truck-orange" data-sound="rumble">
-            <div class="flames">💨</div>
-            <div class="truck-cab"></div>
-            <div class="window"></div>
-            <div class="truck-body"></div>
-            <div class="wheel wheel-left"></div>
-            <div class="wheel wheel-right"></div>
-            <div class="truck-label">RUMBLE!</div>
+    <div id="start-screen">
+        <h1>MONSTER TRUCK RALLY!</h1>
+        <p>Pick your truck!</p>
+        <div class="truck-picker" id="truck-picker">
+            <!-- Trucks will be added by JS -->
         </div>
     </div>
 
-    <div class="mud-track"></div>
+    <canvas id="game-canvas"></canvas>
+    <div id="score">Stars: 0</div>
+    <div id="controls-hint">Arrow keys or WASD to drive! Space to honk!</div>
+
+    <div id="mobile-controls">
+        <div class="controls-row">
+            <button class="mobile-btn" data-key="up">↑</button>
+        </div>
+        <div class="controls-row">
+            <button class="mobile-btn" data-key="left">←</button>
+            <button class="mobile-btn" data-key="down">↓</button>
+            <button class="mobile-btn" data-key="right">→</button>
+        </div>
+    </div>
+    <button id="honk-btn">HONK!</button>
 
     <script>
-        // Create audio context
+        // Audio setup
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -294,27 +210,6 @@
             if (!audioCtx) {
                 audioCtx = new AudioContext();
             }
-        }
-
-        // Sound generators
-        function playRev() {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(80, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.3);
-            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.5);
-
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.5);
         }
 
         function playHonk() {
@@ -325,7 +220,6 @@
 
             osc1.type = 'square';
             osc1.frequency.setValueAtTime(400, audioCtx.currentTime);
-
             osc2.type = 'square';
             osc2.frequency.setValueAtTime(500, audioCtx.currentTime);
 
@@ -342,9 +236,28 @@
             osc2.stop(audioCtx.currentTime + 0.4);
         }
 
+        function playCollect() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
         function playCrash() {
             initAudio();
-            const bufferSize = audioCtx.sampleRate * 0.5;
+            const bufferSize = audioCtx.sampleRate * 0.3;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
 
@@ -354,166 +267,452 @@
 
             const noise = audioCtx.createBufferSource();
             const gain = audioCtx.createGain();
-            const filter = audioCtx.createBiquadFilter();
-
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.3);
 
             noise.buffer = buffer;
-            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
 
-            noise.connect(filter);
-            filter.connect(gain);
+            noise.connect(gain);
             gain.connect(audioCtx.destination);
-
             noise.start();
         }
 
-        function playZoom() {
+        function playEngine() {
             initAudio();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
 
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.2);
-            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.4);
+            osc.frequency.setValueAtTime(60 + Math.random() * 20, audioCtx.currentTime);
 
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.4);
+            osc.stop(audioCtx.currentTime + 0.1);
         }
 
-        function playBeep() {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+        // Game setup
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-            osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
-
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.25);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        function playRumble() {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const lfo = audioCtx.createOscillator();
-            const lfoGain = audioCtx.createGain();
+        const truckColors = [
+            { name: 'Red Rocket', body: '#FF4444', cab: '#FF6666' },
+            { name: 'Blue Thunder', body: '#4444FF', cab: '#6666FF' },
+            { name: 'Green Machine', body: '#44CC44', cab: '#66FF66' },
+            { name: 'Yellow Lightning', body: '#DDDD00', cab: '#FFFF44' },
+            { name: 'Purple Crusher', body: '#AA44FF', cab: '#CC66FF' },
+            { name: 'Orange Blaze', body: '#FF8844', cab: '#FFAA66' },
+        ];
 
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(50, audioCtx.currentTime);
+        let selectedTruck = null;
+        let truck = null;
+        let stars = [];
+        let obstacles = [];
+        let dustParticles = [];
+        let score = 0;
+        let keys = {};
+        let engineTimer = 0;
 
-            lfo.frequency.setValueAtTime(20, audioCtx.currentTime);
-            lfoGain.gain.setValueAtTime(30, audioCtx.currentTime);
+        // Create truck picker
+        const picker = document.getElementById('truck-picker');
+        truckColors.forEach((color, index) => {
+            const option = document.createElement('div');
+            option.className = 'truck-option';
 
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
+            const miniCanvas = document.createElement('canvas');
+            miniCanvas.width = 100;
+            miniCanvas.height = 60;
+            const miniCtx = miniCanvas.getContext('2d');
+            drawTruck(miniCtx, 50, 30, 0, color, 0.5);
 
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            const label = document.createElement('span');
+            label.textContent = color.name;
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            lfo.start();
-            osc.start();
-            lfo.stop(audioCtx.currentTime + 0.6);
-            osc.stop(audioCtx.currentTime + 0.6);
-        }
-
-        const sounds = {
-            rev: playRev,
-            honk: playHonk,
-            crash: playCrash,
-            zoom: playZoom,
-            beep: playBeep,
-            rumble: playRumble
-        };
-
-        // Create dust particles
-        function createDust(x, y) {
-            for (let i = 0; i < 5; i++) {
-                const dust = document.createElement('div');
-                dust.className = 'dust-particle';
-                dust.style.left = (x + Math.random() * 100 - 50) + 'px';
-                dust.style.top = (y + Math.random() * 50) + 'px';
-                document.body.appendChild(dust);
-
-                setTimeout(() => dust.remove(), 1000);
-            }
-        }
-
-        // Handle truck clicks
-        document.querySelectorAll('.truck').forEach(truck => {
-            truck.addEventListener('click', (e) => {
-                const soundType = truck.dataset.sound;
-
-                // Play sound
-                if (sounds[soundType]) {
-                    sounds[soundType]();
-                }
-
-                // Add visual feedback
-                truck.classList.add('playing');
-                setTimeout(() => truck.classList.remove('playing'), 300);
-
-                // Create dust effect
-                const rect = truck.getBoundingClientRect();
-                createDust(rect.left + rect.width / 2, rect.bottom);
-            });
-
-            // Also handle touch for mobile/tablets
-            truck.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                truck.click();
-            });
+            option.appendChild(miniCanvas);
+            option.appendChild(label);
+            option.addEventListener('click', () => startGame(index));
+            picker.appendChild(option);
         });
 
-        // Fun background - random stars/sparkles
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.innerHTML = '✨';
-            sparkle.style.position = 'fixed';
-            sparkle.style.left = Math.random() * window.innerWidth + 'px';
-            sparkle.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-            sparkle.style.fontSize = (Math.random() * 20 + 10) + 'px';
-            sparkle.style.pointerEvents = 'none';
-            sparkle.style.animation = 'fadeOut 2s forwards';
-            document.body.appendChild(sparkle);
+        function drawTruck(context, x, y, angle, colors, scale = 1) {
+            context.save();
+            context.translate(x, y);
+            context.rotate(angle);
+            context.scale(scale, scale);
 
-            setTimeout(() => sparkle.remove(), 2000);
+            // Shadow
+            context.fillStyle = 'rgba(0,0,0,0.3)';
+            context.beginPath();
+            context.ellipse(0, 35, 50, 15, 0, 0, Math.PI * 2);
+            context.fill();
+
+            // Wheels
+            const wheelPositions = [[-35, 20], [35, 20]];
+            wheelPositions.forEach(([wx, wy]) => {
+                context.fillStyle = '#222';
+                context.beginPath();
+                context.arc(wx, wy, 22, 0, Math.PI * 2);
+                context.fill();
+
+                context.fillStyle = '#444';
+                context.beginPath();
+                context.arc(wx, wy, 18, 0, Math.PI * 2);
+                context.fill();
+
+                context.fillStyle = '#888';
+                context.beginPath();
+                context.arc(wx, wy, 8, 0, Math.PI * 2);
+                context.fill();
+            });
+
+            // Truck body
+            context.fillStyle = colors.body;
+            context.beginPath();
+            context.roundRect(-45, -15, 90, 40, 10);
+            context.fill();
+
+            // Cab
+            context.fillStyle = colors.cab;
+            context.beginPath();
+            context.roundRect(-25, -35, 40, 25, [10, 10, 0, 0]);
+            context.fill();
+
+            // Window
+            context.fillStyle = '#87CEEB';
+            context.beginPath();
+            context.roundRect(-18, -30, 26, 15, [5, 5, 0, 0]);
+            context.fill();
+
+            // Headlights
+            context.fillStyle = '#FFFF00';
+            context.beginPath();
+            context.arc(40, 5, 6, 0, Math.PI * 2);
+            context.fill();
+
+            context.restore();
         }
 
-        // Add fadeOut animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                0% { opacity: 1; transform: scale(1); }
-                100% { opacity: 0; transform: scale(0); }
-            }
-        `;
-        document.head.appendChild(style);
+        function startGame(truckIndex) {
+            initAudio();
+            selectedTruck = truckColors[truckIndex];
+            document.getElementById('start-screen').style.display = 'none';
 
-        // Occasional sparkles
-        setInterval(createSparkle, 2000);
+            truck = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                angle: 0,
+                speed: 0,
+                maxSpeed: 8,
+                acceleration: 0.3,
+                turnSpeed: 0.05,
+                friction: 0.98
+            };
+
+            // Create initial stars
+            for (let i = 0; i < 10; i++) {
+                spawnStar();
+            }
+
+            // Create obstacles (mud puddles and rocks)
+            for (let i = 0; i < 8; i++) {
+                spawnObstacle();
+            }
+
+            gameLoop();
+        }
+
+        function spawnStar() {
+            stars.push({
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 100) + 50,
+                size: 20 + Math.random() * 15,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: 0.02 + Math.random() * 0.02
+            });
+        }
+
+        function spawnObstacle() {
+            const type = Math.random() > 0.5 ? 'mud' : 'rock';
+            obstacles.push({
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 100) + 50,
+                size: 30 + Math.random() * 30,
+                type: type
+            });
+        }
+
+        function drawStar(x, y, size, rotation) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+
+            ctx.fillStyle = '#FFD700';
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 3;
+
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * Math.PI * 2) / 5 - Math.PI / 2;
+                const innerAngle = angle + Math.PI / 5;
+
+                if (i === 0) {
+                    ctx.moveTo(Math.cos(angle) * size, Math.sin(angle) * size);
+                } else {
+                    ctx.lineTo(Math.cos(angle) * size, Math.sin(angle) * size);
+                }
+                ctx.lineTo(Math.cos(innerAngle) * size * 0.4, Math.sin(innerAngle) * size * 0.4);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawObstacle(obs) {
+            ctx.save();
+            ctx.translate(obs.x, obs.y);
+
+            if (obs.type === 'mud') {
+                ctx.fillStyle = '#5D4037';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, obs.size, obs.size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#4E342E';
+                ctx.beginPath();
+                ctx.ellipse(-5, -5, obs.size * 0.3, obs.size * 0.2, 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillStyle = '#757575';
+                ctx.beginPath();
+                ctx.moveTo(-obs.size * 0.5, obs.size * 0.3);
+                ctx.lineTo(-obs.size * 0.2, -obs.size * 0.4);
+                ctx.lineTo(obs.size * 0.3, -obs.size * 0.3);
+                ctx.lineTo(obs.size * 0.5, obs.size * 0.2);
+                ctx.lineTo(0, obs.size * 0.4);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#9E9E9E';
+                ctx.beginPath();
+                ctx.moveTo(-obs.size * 0.2, -obs.size * 0.4);
+                ctx.lineTo(0, -obs.size * 0.2);
+                ctx.lineTo(obs.size * 0.1, -obs.size * 0.3);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function spawnDust(x, y, angle) {
+            for (let i = 0; i < 3; i++) {
+                dustParticles.push({
+                    x: x - Math.cos(angle) * 40 + (Math.random() - 0.5) * 20,
+                    y: y - Math.sin(angle) * 40 + (Math.random() - 0.5) * 20,
+                    size: 10 + Math.random() * 10,
+                    life: 1,
+                    vx: -Math.cos(angle) * 2 + (Math.random() - 0.5) * 2,
+                    vy: -Math.sin(angle) * 2 + (Math.random() - 0.5) * 2
+                });
+            }
+        }
+
+        function updateDust() {
+            dustParticles = dustParticles.filter(d => {
+                d.x += d.vx;
+                d.y += d.vy;
+                d.life -= 0.03;
+                d.size *= 1.02;
+                return d.life > 0;
+            });
+        }
+
+        function drawDust() {
+            dustParticles.forEach(d => {
+                ctx.fillStyle = `rgba(139, 69, 19, ${d.life * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawGround() {
+            // Grass background
+            ctx.fillStyle = '#3d8c40';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Dirt track marks (decorative)
+            ctx.strokeStyle = '#5D4037';
+            ctx.lineWidth = 40;
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(100, 100);
+            ctx.quadraticCurveTo(canvas.width / 2, 200, canvas.width - 100, 150);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(150, canvas.height - 100);
+            ctx.quadraticCurveTo(canvas.width / 2, canvas.height - 250, canvas.width - 150, canvas.height - 80);
+            ctx.stroke();
+        }
+
+        function update() {
+            if (!truck) return;
+
+            // Handle input
+            let accelerating = keys['ArrowUp'] || keys['KeyW'] || keys['up'];
+            let braking = keys['ArrowDown'] || keys['KeyS'] || keys['down'];
+            let turningLeft = keys['ArrowLeft'] || keys['KeyA'] || keys['left'];
+            let turningRight = keys['ArrowRight'] || keys['KeyD'] || keys['right'];
+
+            // Acceleration
+            if (accelerating) {
+                truck.speed = Math.min(truck.speed + truck.acceleration, truck.maxSpeed);
+            } else if (braking) {
+                truck.speed = Math.max(truck.speed - truck.acceleration, -truck.maxSpeed / 2);
+            }
+
+            // Friction
+            truck.speed *= truck.friction;
+
+            // Turning (only when moving)
+            if (Math.abs(truck.speed) > 0.5) {
+                if (turningLeft) {
+                    truck.angle -= truck.turnSpeed * (truck.speed > 0 ? 1 : -1);
+                }
+                if (turningRight) {
+                    truck.angle += truck.turnSpeed * (truck.speed > 0 ? 1 : -1);
+                }
+            }
+
+            // Move truck
+            truck.x += Math.cos(truck.angle) * truck.speed;
+            truck.y += Math.sin(truck.angle) * truck.speed;
+
+            // Wrap around screen
+            if (truck.x < -50) truck.x = canvas.width + 50;
+            if (truck.x > canvas.width + 50) truck.x = -50;
+            if (truck.y < -50) truck.y = canvas.height + 50;
+            if (truck.y > canvas.height + 50) truck.y = -50;
+
+            // Dust when moving
+            if (Math.abs(truck.speed) > 2) {
+                spawnDust(truck.x, truck.y, truck.angle);
+
+                engineTimer++;
+                if (engineTimer > 10) {
+                    playEngine();
+                    engineTimer = 0;
+                }
+            }
+
+            // Check star collisions
+            stars = stars.filter(star => {
+                const dist = Math.hypot(truck.x - star.x, truck.y - star.y);
+                if (dist < 50) {
+                    score++;
+                    document.getElementById('score').textContent = `Stars: ${score}`;
+                    playCollect();
+                    spawnStar();
+                    return false;
+                }
+                star.rotation += star.rotationSpeed;
+                return true;
+            });
+
+            // Check obstacle collisions
+            obstacles.forEach(obs => {
+                const dist = Math.hypot(truck.x - obs.x, truck.y - obs.y);
+                if (dist < obs.size + 30 && Math.abs(truck.speed) > 3) {
+                    if (obs.type === 'mud') {
+                        truck.speed *= 0.5;
+                    } else {
+                        truck.speed *= -0.3;
+                        playCrash();
+                    }
+                }
+            });
+
+            updateDust();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawGround();
+
+            // Draw obstacles
+            obstacles.forEach(drawObstacle);
+
+            // Draw stars
+            stars.forEach(star => {
+                drawStar(star.x, star.y, star.size, star.rotation);
+            });
+
+            // Draw dust
+            drawDust();
+
+            // Draw truck
+            if (truck && selectedTruck) {
+                drawTruck(ctx, truck.x, truck.y, truck.angle, selectedTruck, 1);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Keyboard controls
+        window.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'Space') {
+                playHonk();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+
+        // Mobile controls
+        document.querySelectorAll('.mobile-btn').forEach(btn => {
+            const key = btn.dataset.key;
+
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys[key] = true;
+            });
+
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys[key] = false;
+            });
+
+            btn.addEventListener('mousedown', () => keys[key] = true);
+            btn.addEventListener('mouseup', () => keys[key] = false);
+            btn.addEventListener('mouseleave', () => keys[key] = false);
+        });
+
+        document.getElementById('honk-btn').addEventListener('click', playHonk);
+        document.getElementById('honk-btn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            playHonk();
+        });
     </script>
 </body>
 </html>
